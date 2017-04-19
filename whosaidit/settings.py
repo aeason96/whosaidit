@@ -70,6 +70,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'whosaidit.wsgi.application'
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+        "ROUTING": "whosaidit.routing.channel_routing",
+    },
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases

@@ -1,8 +1,22 @@
-from channels.handler import AsgiHandler
-from django.http import HttpResponse
+from channels import Group
+from channels.sessions import channel_session
 
 
-def http_consumer(message):
-    response = HttpResponse("Hello World! You ased for %s" % message.content['path'])
-    for chunk in AsgiHandler.encode_response(response):
-        message.reply_channel.send(chunk)
+@channel_session
+def ws_connect(message):
+    message.reply_channel.send({'accept': True})
+
+    room = message.content['patch'].strip('/')
+    message.channel_session['room'] = room
+
+    Group('chat-%s' % room).add(message.reply_channel)
+
+@channel_session
+def ws_disconnect(message):
+    Group('chat-%s' % message.channel_session['room']).discard(message.reply_channel)
+
+@channel_session
+def ws_message(message):
+    Group('chat-%s' % message.channel_session['room']).send({
+        'text': '[user] %s' % message.content['text']
+    })
