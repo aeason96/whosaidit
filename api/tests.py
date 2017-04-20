@@ -43,4 +43,6 @@ class TestAPIEndpoint(APITestCase):
     def test_game_room_destroyed_last_player_leaves(self):
         pass
 
+    def test_get_game_rooms_from_coordinates(self):
+        pass
     
