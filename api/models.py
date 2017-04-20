@@ -23,4 +23,5 @@ class Answer(models.Model):
     value = models.CharField(max_length=300, null=False, blank=True)
     creator = models.ForeignKey(Player)
     question = models.ForeignKey(Question)
+    winner = models.BooleanField(default=False)
 
