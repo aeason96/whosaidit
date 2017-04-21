@@ -1,3 +1,5 @@
+from math import sqrt
+
 from django.db import models
 
 # Create your models here.
@@ -8,8 +10,11 @@ class GameRoom(models.Model):
     password = models.CharField(max_length=50, null=True, blank=True)
 
     # these are used to determine games near a player
-    longitude = models.DecimalField(decimal_places=7, max_digits=10)
-    latitude = models.DecimalField(decimal_places=7, max_digits=10)
+    longitude = models.DecimalField(decimal_places=7, max_digits=10, null=True, blank=True)
+    latitude = models.DecimalField(decimal_places=7, max_digits=10, null=True, blank=True)
+
+    def distance_from(self, longitude, latitude):
+        return sqrt((self.longitude - longitude) ** 2 + (self.latitude - latitude) ** 2)
 
 class Player(models.Model):
     game_room = models.ForeignKey(GameRoom)

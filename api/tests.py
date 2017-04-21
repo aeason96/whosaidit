@@ -1,4 +1,4 @@
-from api.models import GameRoom, Player
+from api.models import GameRoom, Player, Question, Answer
 from rest_framework.test import APITestCase
 from rest_framework import status
 
@@ -32,19 +32,37 @@ class TestAPIEndpoint(APITestCase):
         """
         tests a failed creation of a player because of wrong game room credentials.
         """
-        pass
+        GameRoom(name='test', password='test').save()
+        url = '/api/player/create/'
+        data = {'name': 'kevin', 'game_room': {'id': 1, 'name': 'test', 'password': ''}}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_question_create_view(self):
         """
         tests that a player can create a new question to be used within the game room
         """
-        pass
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        url = 'api/question/create/'
+        data = {'value': 'Is this a test?', 'creator': 1}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Question.objects.get(pk=1).value, 'Is this a test?')
 
     def test_answer_create_view(self):
         """
         tests that an answer can be created in relation to a question. One answer per question
         """
-        pass
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        Question(value='question', creator_id=1)
+        url = 'api/question/create/'
+        data = {'value': 'answer to a question', 'creator': 1, 'question': 1}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Answer.objects.get(pk=1).exists())
+
 
     def test_answer_create_no_more_than_one_per_user_per_question(self):
         """
@@ -61,7 +79,7 @@ class TestAPIEndpoint(APITestCase):
 
     def test_answer_list(self):
         """
-        tests that an answer list recieved from the endpoint only contains answers
+        tests that an answer list received from the endpoint only contains answers
         related to the question in the url query
         """
         pass
@@ -78,11 +96,16 @@ class TestAPIEndpoint(APITestCase):
         """
         pass
 
+    def test_distance_from_gameroom(self):
+        g = GameRoom(longitude=100.00, latitude=200.00)
+        self.assertAlmostEqual(g.distance_from(300, 100), 223.6068, places=4)
+
     def test_get_game_rooms_from_coordinates(self):
         """
         tests querying the db for game rooms within a certain radius distance of the corrdinated posted
         """
         pass
+
 
 
 class TestGameLogic(APITestCase):
