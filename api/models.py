@@ -7,7 +7,7 @@ from django.db import models
 
 class GameRoom(models.Model):
     name = models.CharField(max_length=50, null=False, blank=False)
-    password = models.CharField(max_length=50, null=True, blank=True)
+    password = models.CharField(max_length=50, null=False, blank=False)
 
     # these are used to determine games near a player
     longitude = models.DecimalField(decimal_places=7, max_digits=10, null=True, blank=True)

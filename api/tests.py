@@ -36,7 +36,7 @@ class TestAPIEndpoint(APITestCase):
         url = '/api/player/create/'
         data = {'name': 'kevin', 'game_room': {'id': 1, 'name': 'test', 'password': ''}}
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_question_create_view(self):
         """

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.models import *
+from api.models import GameRoom, Player, Question, Answer
 
 class GameRoomSerializer(serializers.ModelSerializer):
 
@@ -9,6 +9,11 @@ class GameRoomSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PlayerSerializer(serializers.ModelSerializer):
+    game_room = GameRoomSerializer() # specify this for nested serialization
+
+    def create(self, validated_data):
+        game_room_data = validated_data.pop('game_room')
+        return Player.objects.create(game_room=GameRoom.objects.get(**game_room_data), **validated_data)
 
     class Meta:
         model = Player
@@ -16,6 +21,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         depth = 1
 
 class QuestionSerializer(serializers.ModelSerializer):
+    creator = serializers.PrimaryKeyRelatedField(queryset=Player.objects.all())
 
     class Meta:
         model = Question

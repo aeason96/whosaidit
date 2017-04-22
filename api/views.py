@@ -1,6 +1,7 @@
 from api.models import GameRoom, Player, Question, Answer
 from api.serializers import GameRoomSerializer, PlayerSerializer, QuestionSerializer, AnswerSerializer
 from rest_framework import generics
+from rest_framework.exceptions import AuthenticationFailed
 
 
 class GameRoomCreateView(generics.CreateAPIView):
@@ -11,6 +12,14 @@ class GameRoomCreateView(generics.CreateAPIView):
 class PlayerCreateView(generics.CreateAPIView):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+
+    def post(self, request, *args, **kwargs):
+        try:
+            GameRoom.objects.get(**request.data['game_room'])
+        except:
+            raise AuthenticationFailed('Your GameRoom or Password was incorrect')
+        return super(PlayerCreateView, self).post(request, *args, **kwargs)
+
 
 
 class QuestionCreateView(generics.CreateAPIView):
