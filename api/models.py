@@ -6,7 +6,7 @@ from django.db import models
 
 
 class GameRoom(models.Model):
-    name = models.CharField(max_length=50, null=False, blank=False)
+    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
     password = models.CharField(max_length=50, null=False, blank=False)
 
     # these are used to determine games near a player
@@ -30,3 +30,5 @@ class Answer(models.Model):
     question = models.ForeignKey(Question)
     winner = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('creator', 'question')

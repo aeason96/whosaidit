@@ -68,21 +68,47 @@ class TestAPIEndpoint(APITestCase):
         """
         tests that an answer can be created in relation to a question. One answer per question
         """
-        pass
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        Question(value='question', creator_id=1).save()
+        url = '/api/answer/create/'
+        data = {'value': 'answer to a question', 'creator': 1, 'question': 1}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        r = self.client.post(url, data, format='json')
+        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_answer_update_success(self):
         """
         tests that a answer to a question can be updated. This should only happen if
         everyone in the game room has NOT finished answering the current question yet.
         """
-        pass
+        url = '/api/answer/1/update/'
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        Question(value='question', creator_id=1).save()
+        Answer(value='test', creator_id=1, question_id=1).save()
+        data = {'value': 'updated', 'creator': 1, 'question': 1}
+        self.client.patch(url, data, format='json')
+        self.assertEqual(Answer.objects.get(pk=1).value, 'updated')
 
     def test_answer_list(self):
         """
         tests that an answer list received from the endpoint only contains answers
         related to the question in the url query
         """
-        pass
+        url = '/api/answers/1/' # get the answers from question with pk 1
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        Player(game_room_id=1, name='test2').save()
+        Question(value='question', creator_id=1).save()
+        Question(value='question2', creator_id=1).save()
+        Answer(value='test', creator_id=1, question_id=1).save()
+        Answer(value='test', creator_id=2, question_id=1).save()
+        Answer(value='test2', creator_id=1, question_id=2).save()
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
 
     def test_player_destroy(self):
         """

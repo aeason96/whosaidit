@@ -38,8 +38,11 @@ class AnswerUpdateView(generics.UpdateAPIView):
 
 
 class AnswerListView(generics.ListAPIView):
-    queryset = Answer.objects.all() # TODO we need to filter the answers based on GameRoom
     serializer_class = AnswerSerializer
+
+    def get(self, request, *args, **kwargs):
+        self.queryset = Answer.objects.filter(question_id=kwargs['pk'])
+        return super(AnswerListView, self).get(request, *args, **kwargs)
 
 
 class PlayerDestroyView(generics.DestroyAPIView):
