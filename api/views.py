@@ -21,7 +21,6 @@ class PlayerCreateView(generics.CreateAPIView):
         return super(PlayerCreateView, self).post(request, *args, **kwargs)
 
 
-
 class QuestionCreateView(generics.CreateAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
@@ -48,3 +47,10 @@ class AnswerListView(generics.ListAPIView):
 class PlayerDestroyView(generics.DestroyAPIView):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+
+    def delete(self, request, *args, **kwargs):
+        player = Player.objects.get(pk=kwargs['pk'])
+        game_room = GameRoom.objects.get(player=player)
+        if len(Player.objects.filter(game_room=game_room)) == 1:
+            game_room.delete()
+        super(PlayerDestroyView, self).delete(request, *args, **kwargs)

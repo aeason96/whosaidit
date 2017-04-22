@@ -2,8 +2,8 @@ from api.models import GameRoom, Player, Question, Answer
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-class TestAPIEndpoint(APITestCase):
 
+class TestAPIEndpoint(APITestCase):
     def test_create_game_room(self):
         """
         tests that we can create a new game room with a post to the endpoint that has a name, password
@@ -26,7 +26,7 @@ class TestAPIEndpoint(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Player.objects.count(), 1)
-        self.assertEqual(Player.objects.get(pk=1).game_room_id, 1) # assert this player belongs to game room 1
+        self.assertEqual(Player.objects.get(pk=1).game_room_id, 1)  # assert this player belongs to game room 1
 
     def test_player_creation_requires_game_room_credentials(self):
         """
@@ -63,7 +63,6 @@ class TestAPIEndpoint(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Answer.objects.get(pk=1).value, 'answer to a question')
 
-
     def test_answer_create_no_more_than_one_per_user_per_question(self):
         """
         tests that an answer can be created in relation to a question. One answer per question
@@ -97,7 +96,7 @@ class TestAPIEndpoint(APITestCase):
         tests that an answer list received from the endpoint only contains answers
         related to the question in the url query
         """
-        url = '/api/answers/1/' # get the answers from question with pk 1
+        url = '/api/answers/1/'  # get the answers from question with pk 1
         GameRoom(name='test', password='test').save()
         Player(game_room_id=1, name='test').save()
         Player(game_room_id=1, name='test2').save()
@@ -114,13 +113,22 @@ class TestAPIEndpoint(APITestCase):
         """
         test that making a call to this endpoint destorys the database reference to this player
         """
-        pass
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        url = '/api/player/1/delete/'
+        self.client.delete(url)
+        self.assertEqual(len(Player.objects.all()), 0)
 
     def test_game_room_destroyed_last_player_leaves(self):
         """
         tests that a game room is destroyed when its last player leaves
         """
-        pass
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        url = '/api/player/1/delete/'
+        self.client.delete(url)
+        self.assertEqual(len(Player.objects.all()), 0)
+        self.assertEqual(len(GameRoom.objects.all()), 0)
 
     def test_distance_from_gameroom(self):
         g = GameRoom(longitude=100.00, latitude=200.00)
@@ -133,9 +141,7 @@ class TestAPIEndpoint(APITestCase):
         pass
 
 
-
 class TestGameLogic(APITestCase):
-
     def test_choosing_new_question_master(self):
         """
         tests choosing a new question master form the queue
