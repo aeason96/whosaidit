@@ -7,6 +7,11 @@ class GameRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameRoom
         fields = '__all__'
+        extra_kwargs = {
+            'name': {
+                'validators': []
+            }
+        }
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -19,6 +24,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
         fields = '__all__'
+        depth = 1
 
 
 class QuestionSerializer(serializers.ModelSerializer):

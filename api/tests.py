@@ -27,6 +27,7 @@ class TestAPIEndpoint(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Player.objects.count(), 1)
         self.assertEqual(Player.objects.get(pk=1).game_room_id, 1)  # assert this player belongs to game room 1
+        self.assertEqual(len(GameRoom.objects.all()), 1)
 
     def test_player_creation_requires_game_room_credentials(self):
         """
