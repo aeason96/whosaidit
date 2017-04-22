@@ -44,7 +44,7 @@ class TestAPIEndpoint(APITestCase):
         """
         GameRoom(name='test', password='test').save()
         Player(game_room_id=1, name='test').save()
-        url = 'api/question/create/'
+        url = '/api/question/create/'
         data = {'value': 'Is this a test?', 'creator': 1}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -56,12 +56,12 @@ class TestAPIEndpoint(APITestCase):
         """
         GameRoom(name='test', password='test').save()
         Player(game_room_id=1, name='test').save()
-        Question(value='question', creator_id=1)
-        url = 'api/question/create/'
+        Question(value='question', creator_id=1).save()
+        url = '/api/answer/create/'
         data = {'value': 'answer to a question', 'creator': 1, 'question': 1}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Answer.objects.get(pk=1).exists())
+        self.assertEqual(Answer.objects.get(pk=1).value, 'answer to a question')
 
 
     def test_answer_create_no_more_than_one_per_user_per_question(self):

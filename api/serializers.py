@@ -28,6 +28,8 @@ class QuestionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AnswerSerializer(serializers.ModelSerializer):
+    creator = serializers.PrimaryKeyRelatedField(queryset=Player.objects.all())
+    question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
 
     class Meta:
         model = Answer
