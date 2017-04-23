@@ -1,12 +1,28 @@
 from api.models import GameRoom, Player, Question, Answer
 from api.serializers import GameRoomSerializer, PlayerSerializer, QuestionSerializer, AnswerSerializer
 from rest_framework import generics
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
 
 class GameRoomCreateView(generics.CreateAPIView):
     queryset = GameRoom.objects.all()
     serializer_class = GameRoomSerializer
+
+    def post(self, request, *args, **kwargs):
+        game_room_name = request.data['name']
+        if GameRoom.objects.filter(name=game_room_name).exists():
+            raise ValidationError('Your game room name must be unique')
+        return super(GameRoomCreateView, self).post(request, *args, **kwargs)
+
+
+class GameRoomListView(generics.ListAPIView):
+    serializer_class = GameRoomSerializer
+
+    def get(self, request, *args, **kwargs):
+        latitude = float(kwargs.pop('lat'))
+        longitude = float(kwargs.pop('long'))
+        self.queryset = sorted(GameRoom.objects.all(), key=lambda d: d.distance_from(longitude, latitude))
+        return super(GameRoomListView, self).get(request, *args, **kwargs)
 
 
 class PlayerCreateView(generics.CreateAPIView):

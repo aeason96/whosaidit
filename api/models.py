@@ -1,5 +1,5 @@
 from math import sqrt
-
+from decimal import Decimal
 from django.db import models
 
 # Create your models here.
@@ -14,7 +14,7 @@ class GameRoom(models.Model):
     latitude = models.DecimalField(decimal_places=7, max_digits=10, null=True, blank=True)
 
     def distance_from(self, longitude, latitude):
-        return sqrt((self.longitude - longitude) ** 2 + (self.latitude - latitude) ** 2)
+        return sqrt((Decimal(self.longitude) - Decimal(longitude)) ** 2 + (Decimal(self.latitude) - Decimal(latitude)) ** 2)
 
 class Player(models.Model):
     game_room = models.ForeignKey(GameRoom)

@@ -16,6 +16,14 @@ class TestAPIEndpoint(APITestCase):
         self.assertEqual(GameRoom.objects.count(), 1)
         self.assertEqual(GameRoom.objects.get(pk=1).name, 'test')
 
+    def test_create_game_room_needs_unique_name(self):
+        url = '/api/gameroom/create/'
+        data = {'name': 'test', "password": 'test', 'longitude': 1.1, 'latitude': 1.1}
+        GameRoom(name='test', password='test').save()
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(len(GameRoom.objects.all()), 1)
+
     def test_player_create_joins_game(self):
         """
         tests that a player can join the game with the write game room credentials.
@@ -133,14 +141,20 @@ class TestAPIEndpoint(APITestCase):
 
     def test_distance_from_gameroom(self):
         g = GameRoom(longitude=100.00, latitude=200.00)
+        g.save()
         self.assertAlmostEqual(g.distance_from(300, 100), 223.6068, places=4)
 
     def test_get_game_rooms_from_coordinates(self):
         """
         tests querying the db for game rooms within a certain radius distance of the corrdinated posted
         """
-        pass
-
+        GameRoom(name='test', password='password', latitude=1.1, longitude=1.1).save()
+        GameRoom(name='test2', password='password', latitude=.9, longitude=.9).save()
+        GameRoom(name='test4', password='password', latitude=3.0, longitude=3.0).save()
+        GameRoom(name='test3', password='password', latitude=1.5, longitude=1.5).save()
+        url = '/api/gamerooms/location/1.0/1.0/'  # todo might want to change this
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 class TestGameLogic(APITestCase):
     def test_choosing_new_question_master(self):
