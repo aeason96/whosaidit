@@ -1,0 +1,1 @@
+web: gunicorn whosaidit.wsgi
