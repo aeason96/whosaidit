@@ -139,7 +139,7 @@ class TestAPIEndpoint(APITestCase):
         self.assertEqual(len(Player.objects.all()), 0)
         self.assertEqual(len(GameRoom.objects.all()), 0)
 
-    def test_distance_from_gameroom(self):
+    def test_distance_from_game_room(self):
         g = GameRoom(longitude=100.00, latitude=200.00)
         g.save()
         self.assertAlmostEqual(g.distance_from(300, 100), 223.6068, places=4)
@@ -152,33 +152,67 @@ class TestAPIEndpoint(APITestCase):
         GameRoom(name='test2', password='password', latitude=.9, longitude=.9).save()
         GameRoom(name='test4', password='password', latitude=3.0, longitude=3.0).save()
         GameRoom(name='test3', password='password', latitude=1.5, longitude=1.5).save()
-        url = '/api/gamerooms/location/1.0/1.0/'  # todo might want to change this
+        url = '/api/gamerooms/location/1.0/1.0/'
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class TestGameLogic(APITestCase):
     def test_choosing_new_question_master(self):
         """
         tests choosing a new question master form the queue
         """
-        pass
+        url = '/api/gameroom/1/questionmaster/'
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        Player(game_room_id=1, name='test2').save()
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['id'], 1)
 
     def test_choosing_new_answer_detective(self):
         """
         tests choosing a new answer detective form the queue
         """
-        pass
+        url = '/api/gameroom/1/answerdetective/'
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test', question_master=True).save()
+        Question(creator_id=1, value='test question')
+        Player(game_room_id=1, name='test2').save()
+        Player(game_room_id=1, name='test3').save()
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['id'], 2)
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['id'], 3)
 
     def test_queue_question_master_wraps_around(self):
         """
         tests choosing a question master form the queue. Upon completion,
         this user should be appended to the end of the queue and the next user should be selected from the queue
         """
-        pass
+        url = '/api/gameroom/1/questionmaster/'
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        Player(game_room_id=1, name='test2').save()
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['id'], 1)
+        self.client.get(url, format='json')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['id'], 1)
 
     def test_queue_answer_detective_wraps_around(self):
         """
         tests choosing a new answer detective form the queue. Upon completion,
         this user should be appended to the end of the queue and the next user should be selected from the queue
         """
-        pass
+        url = '/api/gameroom/1/answerdetective/'
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test', question_master=True).save()
+        Question(creator_id=1, value='test question')
+        Player(game_room_id=1, name='test2').save()
+        Player(game_room_id=1, name='test3').save()
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['id'], 2)
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['id'], 3)
+        response = self.client.get(url)
+        self.assertEqual(response.data['id'], 2)

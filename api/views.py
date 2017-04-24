@@ -37,6 +37,48 @@ class PlayerCreateView(generics.CreateAPIView):
         return super(PlayerCreateView, self).post(request, *args, **kwargs)
 
 
+class QuestionMasterRetrieveView(generics.RetrieveAPIView):
+    serializer_class = PlayerSerializer
+    lookup_field = 'game_room'
+
+    def get(self, request, *args, **kwargs):
+        current_master = list(Player.objects.filter(game_room_id=kwargs['game_room'], question_master=True))
+        if (len(current_master) == 1):
+            current_master[0].question_master = False
+            current_master[0].save()
+            players = list(Player.objects.filter(game_room_id=kwargs['game_room']))
+            current_id = players.index(current_master[0])
+            next_master = players[(current_id + 1) % len(players)]
+            next_master.question_master = True
+            next_master.save()
+        else: # the room has not been assigned a question aster yet, get the first person
+            question_master = Player.objects.filter(game_room_id=kwargs['game_room'])[0]
+            question_master.question_master = True
+            question_master.save()
+        self.queryset = Player.objects.filter(game_room_id=kwargs['game_room'], question_master=True)
+        return super(QuestionMasterRetrieveView, self).get(request, *args, **kwargs)
+
+class AnswerDetectiveRetrieveView(generics.RetrieveAPIView):
+    serializer_class = PlayerSerializer
+    lookup_field = 'game_room'
+
+    def get(self, request, *args, **kwargs):
+        current_detective = Player.objects.filter(game_room_id=kwargs['game_room'], answer_detective=True)
+        if (len(current_detective) == 1):
+            current_detective[0].answer_detective = False
+            current_detective[0].save()
+            players = list(Player.objects.filter(game_room_id=kwargs['game_room'], question_master=False))
+            current_id = players.index(current_detective[0])
+            next_detective = players[(current_id + 1) % len(players)]
+            next_detective.answer_detective = True
+            next_detective.save()
+        else:
+            answer_detective = Player.objects.filter(game_room_id=kwargs['game_room'], question_master=False)[0]
+            answer_detective.answer_detective = True
+            answer_detective.save()
+        self.queryset = Player.objects.filter(game_room_id=kwargs['game_room'], answer_detective=True)
+        return super(AnswerDetectiveRetrieveView, self).get(request, *args, **kwargs)
+
 class QuestionCreateView(generics.CreateAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer

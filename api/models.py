@@ -19,6 +19,11 @@ class GameRoom(models.Model):
 class Player(models.Model):
     game_room = models.ForeignKey(GameRoom)
     name = models.CharField(max_length=20, null=False, blank=False)
+    question_master = models.BooleanField(default=False)
+    answer_detective = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('game_room', 'name')
 
 class Question(models.Model):
     value = models.CharField(max_length=300, null=False, blank=False)

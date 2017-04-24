@@ -7,6 +7,7 @@ class GameRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameRoom
         fields = '__all__'
+        write_only_fields = ('password')
         extra_kwargs = {
             'name': {
                 'validators': []
@@ -23,7 +24,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Player
-        fields = '__all__'
+        exclude = ('question_master', 'answer_detective')
         depth = 1
 
 
