@@ -30,7 +30,6 @@ class PlayerCreateView(generics.CreateAPIView):
     serializer_class = PlayerSerializer
 
     def post(self, request, *args, **kwargs):
-        raise ValidationError(request.data)
         try:
             GameRoom.objects.get(**request.data['game_room'])
         except:
