@@ -83,6 +83,20 @@ class QuestionCreateView(generics.CreateAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
+    def post(self, request, *args, **kwargs):
+        previous_question = Question.objects.filter(active=True)
+        if previous_question.exists():
+            for question in previous_question:
+                question.active = False
+                question.save()
+        return super().post(request, *args, **kwargs)
+
+
+class QuestionRetrieveView(generics.RetrieveAPIView):
+    serializer_class = QuestionSerializer
+    lookup_field = 'game_room'
+    queryset = Question.objects.filter(active=True)
+
 
 class AnswerCreateView(generics.CreateAPIView):
     queryset = Answer.objects.all()

@@ -54,7 +54,7 @@ class TestAPIEndpoint(APITestCase):
         GameRoom(name='test', password='test').save()
         Player(game_room_id=1, name='test').save()
         url = '/api/question/create/'
-        data = {'value': 'Is this a test?', 'creator': 1}
+        data = {'value': 'Is this a test?', 'creator': 1, 'game_room': 1}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Question.objects.get(pk=1).value, 'Is this a test?')
@@ -65,7 +65,7 @@ class TestAPIEndpoint(APITestCase):
         """
         GameRoom(name='test', password='test').save()
         Player(game_room_id=1, name='test').save()
-        Question(value='question', creator_id=1).save()
+        Question(value='question', creator_id=1, game_room_id=1).save()
         url = '/api/answer/create/'
         data = {'value': 'answer to a question', 'creator': 1, 'question': 1}
         response = self.client.post(url, data, format='json')
@@ -78,7 +78,7 @@ class TestAPIEndpoint(APITestCase):
         """
         GameRoom(name='test', password='test').save()
         Player(game_room_id=1, name='test').save()
-        Question(value='question', creator_id=1).save()
+        Question(value='question', creator_id=1, game_room_id=1).save()
         url = '/api/answer/create/'
         data = {'value': 'answer to a question', 'creator': 1, 'question': 1}
         response = self.client.post(url, data, format='json')
@@ -94,7 +94,7 @@ class TestAPIEndpoint(APITestCase):
         url = '/api/answer/1/update/'
         GameRoom(name='test', password='test').save()
         Player(game_room_id=1, name='test').save()
-        Question(value='question', creator_id=1).save()
+        Question(value='question', creator_id=1, game_room_id=1).save()
         Answer(value='test', creator_id=1, question_id=1).save()
         data = {'value': 'updated', 'creator': 1, 'question': 1}
         self.client.patch(url, data, format='json')
@@ -109,8 +109,8 @@ class TestAPIEndpoint(APITestCase):
         GameRoom(name='test', password='test').save()
         Player(game_room_id=1, name='test').save()
         Player(game_room_id=1, name='test2').save()
-        Question(value='question', creator_id=1).save()
-        Question(value='question2', creator_id=1).save()
+        Question(value='question', creator_id=1, game_room_id=1, active=False).save()
+        Question(value='question2', creator_id=1, game_room_id=1).save()
         Answer(value='test', creator_id=1, question_id=1).save()
         Answer(value='test', creator_id=2, question_id=1).save()
         Answer(value='test2', creator_id=1, question_id=2).save()
@@ -156,6 +156,24 @@ class TestAPIEndpoint(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_question_inactivate_after_new_question(self):
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        url = '/api/question/create/'
+        data = {'value': 'Is this a test?', 'creator': 1, 'game_room': 1}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Question.objects.get(pk=1).value, 'Is this a test?')
+        self.client.post(url, data, format='json')
+        self.assertFalse(Question.objects.get(pk=1).active)
+
+    def test_get_active_question_from_game_room(self):
+        GameRoom(name='test', password='test').save()
+        Player(game_room_id=1, name='test').save()
+        Question(value='question', creator_id=1, game_room_id=1).save()
+        url = '/api/question/1/'
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.data['id'], 1)
 
 class TestGameLogic(APITestCase):
     def test_choosing_new_question_master(self):

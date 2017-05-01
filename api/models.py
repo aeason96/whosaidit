@@ -28,6 +28,8 @@ class Player(models.Model):
 class Question(models.Model):
     value = models.CharField(max_length=300, null=False, blank=False)
     creator = models.ForeignKey(Player)
+    game_room = models.ForeignKey(GameRoom)
+    active = models.BooleanField(default=True)
 
 class Answer(models.Model):
     value = models.CharField(max_length=300, null=False, blank=True)
