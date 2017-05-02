@@ -21,8 +21,22 @@ class GameRoomListView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         latitude = float(kwargs.pop('lat'))
         longitude = float(kwargs.pop('long'))
-        self.queryset = sorted(GameRoom.objects.all(), key=lambda d: d.distance_from(longitude, latitude))
+        self.queryset = sorted(GameRoom.objects.filter(accepting_players=True), key=lambda d: d.distance_from(longitude, latitude))
         return super(GameRoomListView, self).get(request, *args, **kwargs)
+
+class GameRoomCloseView(generics.RetrieveAPIView):
+    serializer_class = GameRoomSerializer
+    queryset = GameRoom.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        g = GameRoom.objects.get(pk=kwargs['pk'])
+        g.accepting_players = False
+        g.save()
+        return super().get(request, *args, **kwargs)
+
+class GameRoomRetrieveView(generics.RetrieveAPIView):
+    serializer_class = GameRoomSerializer
+    queryset = GameRoom.objects.all()
 
 
 class PlayerCreateView(generics.CreateAPIView):
@@ -31,7 +45,9 @@ class PlayerCreateView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            GameRoom.objects.get(**request.data['game_room'])
+            g = GameRoom.objects.get(**request.data['game_room'])
+            if not g.accepting_players:
+                raise AuthenticationFailed('This GameRoom is no longer accepting players')
         except:
             raise AuthenticationFailed('Your GameRoom or Password was incorrect')
         return super(PlayerCreateView, self).post(request, *args, **kwargs)

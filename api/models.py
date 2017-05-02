@@ -12,6 +12,7 @@ class GameRoom(models.Model):
     # these are used to determine games near a player
     longitude = models.DecimalField(decimal_places=7, max_digits=10, null=True, blank=True)
     latitude = models.DecimalField(decimal_places=7, max_digits=10, null=True, blank=True)
+    accepting_players = models.BooleanField(default=True)
 
     def distance_from(self, longitude, latitude):
         return sqrt((Decimal(self.longitude) - Decimal(longitude)) ** 2 + (Decimal(self.latitude) - Decimal(latitude)) ** 2)

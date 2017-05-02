@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from api.views import GameRoomCreateView, PlayerCreateView, QuestionCreateView, AnswerCreateView, AnswerUpdateView, \
-    AnswerListView, PlayerDestroyView, GameRoomListView, QuestionMasterRetrieveView, AnswerDetectiveRetrieveView, QuestionRetrieveView
+    AnswerListView, PlayerDestroyView, GameRoomListView, QuestionMasterRetrieveView, AnswerDetectiveRetrieveView, QuestionRetrieveView, GameRoomCloseView, GameRoomRetrieveView
 
 urlpatterns = [
     url(r'^gameroom/create/$', GameRoomCreateView.as_view()),
@@ -14,4 +14,6 @@ urlpatterns = [
     url(r'^gameroom/(?P<game_room>[0-9]+)/questionmaster/$', QuestionMasterRetrieveView.as_view()),
     url(r'^gameroom/(?P<game_room>[0-9]+)/answerdetective/$', AnswerDetectiveRetrieveView.as_view()),
     url(r'^question/(?P<game_room>[0-9]+)/$', QuestionRetrieveView.as_view()),
+    url(r'^gameroom/(?P<pk>[0-9]+)/close/$', GameRoomCloseView.as_view()),
+    url(r'^gameroom/(?P<pk>[0-9]+)/$', GameRoomRetrieveView.as_view())
 ]
