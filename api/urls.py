@@ -16,5 +16,5 @@ urlpatterns = [
     url(r'^question/(?P<game_room>[0-9]+)/$', QuestionRetrieveView.as_view()),
     url(r'^gameroom/(?P<pk>[0-9]+)/close/$', GameRoomCloseView.as_view()),
     url(r'^gameroom/(?P<pk>[0-9]+)/$', GameRoomRetrieveView.as_view()),
-    url(r'^gameroom/(?P<pk>[0-9]+/players/$)', GameRoomPlayersView.as_view())
+    url(r'^gameroom/(?P<pk>[0-9]+)/players/$', GameRoomPlayersView.as_view())
 ]
