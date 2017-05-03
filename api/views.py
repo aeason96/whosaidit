@@ -146,7 +146,7 @@ class PlayerDestroyView(generics.RetrieveAPIView):
         if len(Player.objects.filter(game_room=game_room)) == 1:
             game_room.delete()
         player.delete()
-        return Response
+        return Response()
 
 class GameRoomPlayersView(generics.ListAPIView):
     serializer_class = PlayerSerializer
