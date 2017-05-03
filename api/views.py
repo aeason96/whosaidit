@@ -2,6 +2,7 @@ from api.models import GameRoom, Player, Question, Answer
 from api.serializers import GameRoomSerializer, PlayerSerializer, QuestionSerializer, AnswerSerializer
 from rest_framework import generics
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
@@ -145,7 +146,7 @@ class PlayerDestroyView(generics.RetrieveAPIView):
         if len(Player.objects.filter(game_room=game_room)) == 1:
             game_room.delete()
         player.delete()
-        super(PlayerDestroyView, self).get(request, *args, **kwargs)
+        return Response
 
 class GameRoomPlayersView(generics.ListAPIView):
     serializer_class = PlayerSerializer
