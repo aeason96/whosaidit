@@ -49,6 +49,8 @@ class PlayerCreateView(generics.CreateAPIView):
             g = GameRoom.objects.get(**request.data['game_room'])
             if not g.accepting_players:
                 raise AuthenticationFailed('This GameRoom is no longer accepting players')
+            if Player.objects.filter(game_room=g, name=request.data['name']).exists():
+                raise AuthenticationFailed('That name is already taken!')
         except:
             raise AuthenticationFailed('Your GameRoom or Password was incorrect')
         return super(PlayerCreateView, self).post(request, *args, **kwargs)
