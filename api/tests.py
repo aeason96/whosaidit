@@ -180,14 +180,14 @@ class TestGameLogic(APITestCase):
         """
         tests choosing a new question master form the queue
         """
-        url = '/api/gameroom/1/questionmaster/'
+        url = '/api/gameroom/2/questionmaster/'
         GameRoom(name='test', password='test').save()
         GameRoom(name='test2', password='test').save()
         GameRoom(name='test3', password='test').save()
         Player(game_room_id=1, name='test').save()
-        Player(game_room_id=1, name='test2').save()
+        Player(game_room_id=2, name='test2').save()
         response = self.client.get(url, format='json')
-        self.assertEqual(response.data['id'], 1)
+        self.assertEqual(response.data['id'], 2)
 
     def test_choosing_new_answer_detective(self):
         """
