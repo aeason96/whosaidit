@@ -75,7 +75,7 @@ class QuestionMasterRetrieveView(generics.RetrieveAPIView):
             question_master = Player.objects.filter(game_room_id=kwargs['game_room'])[0]
             question_master.question_master = True
             question_master.save()
-        self.queryset = Player.objects.filter(game_room_id=kwargs['game_room'], question_master=True)
+        self.queryset = Player.objects.filter(game_room_id=kwargs['game_room'], question_master=True).order_by("pk")
         return super(QuestionMasterRetrieveView, self).get(request, *args, **kwargs)
 
 class AnswerDetectiveRetrieveView(generics.RetrieveAPIView):
