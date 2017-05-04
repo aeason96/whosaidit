@@ -31,6 +31,7 @@ class Question(models.Model):
     creator = models.ForeignKey(Player)
     game_room = models.ForeignKey(GameRoom)
     active = models.BooleanField(default=True)
+    unlocked = models.BooleanField(default=False)
 
 class Answer(models.Model):
     value = models.CharField(max_length=300, null=False, blank=True)

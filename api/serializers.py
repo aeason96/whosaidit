@@ -43,3 +43,8 @@ class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = '__all__'
+
+class AnswerSerializerDepth(AnswerSerializer):
+
+    class Meta:
+        depth = 1

@@ -1,5 +1,5 @@
 from api.models import GameRoom, Player, Question, Answer
-from api.serializers import GameRoomSerializer, PlayerSerializer, QuestionSerializer, AnswerSerializer
+from api.serializers import GameRoomSerializer, PlayerSerializer, QuestionSerializer, AnswerSerializer, AnswerSerializerDepth
 from rest_framework import generics
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework.response import Response
@@ -129,11 +129,20 @@ class AnswerUpdateView(generics.UpdateAPIView):
 
 
 class AnswerListView(generics.ListAPIView):
-    serializer_class = AnswerSerializer
+    serializer_class = AnswerSerializerDepth
 
     def get(self, request, *args, **kwargs):
         self.queryset = Answer.objects.filter(question_id=kwargs['pk'])
         return super(AnswerListView, self).get(request, *args, **kwargs)
+
+
+class QuestionUnlockRetrieveView(generics.RetrieveAPIView):
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        Question.objects.get(pk=kwargs['pk']).unlocked = True
+        return super().get(request, *args, **kwargs)
 
 
 class PlayerDestroyView(generics.RetrieveAPIView):
