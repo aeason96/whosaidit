@@ -117,9 +117,7 @@ class QuestionRetrieveView(generics.RetrieveAPIView):
     lookup_field = 'game_room'
     queryset = Question.objects.filter(active=True)
 
-class QuestionGetView(generics.RetrieveAPIView):
-    serializer_class = QuestionSerializer
-    queryset = Question.objects.filter(active=True)
+
 
 
 class AnswerCreateView(generics.CreateAPIView):
@@ -147,6 +145,10 @@ class QuestionUnlockRetrieveView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         Question.objects.get(pk=kwargs['pk']).unlocked = True
         return super().get(request, *args, **kwargs)
+
+class QuestionGetView(generics.RetrieveAPIView):
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.all()
 
 
 class PlayerDestroyView(generics.RetrieveAPIView):
