@@ -117,6 +117,10 @@ class QuestionRetrieveView(generics.RetrieveAPIView):
     lookup_field = 'game_room'
     queryset = Question.objects.filter(active=True)
 
+class QuestionGetView(generics.RetrieveAPIView):
+    serializer_class = QuestionSerializer
+    queryset = Question.objects.filter(active=True)
+
 
 class AnswerCreateView(generics.CreateAPIView):
     queryset = Answer.objects.all()
