@@ -78,6 +78,16 @@ class QuestionMasterRetrieveView(generics.RetrieveAPIView):
         self.queryset = Player.objects.filter(game_room_id=kwargs['game_room'], question_master=True).order_by("pk")
         return super(QuestionMasterRetrieveView, self).get(request, *args, **kwargs)
 
+
+class QuestionMasterRevealView(generics.RetrieveAPIView):
+    serializer_class = PlayerSerializer
+    lookup_field = 'game_room'
+
+    def get(self, request, *args, **kwargs):
+        self.queryset = Player.objects.filter(game_room_id=kwargs['game_room'], question_master=True)
+        return super().get(request, *args, **kwargs)
+
+
 class AnswerDetectiveRetrieveView(generics.RetrieveAPIView):
     serializer_class = PlayerSerializer
     lookup_field = 'game_room'
