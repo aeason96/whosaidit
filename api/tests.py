@@ -182,6 +182,8 @@ class TestGameLogic(APITestCase):
         """
         url = '/api/gameroom/1/questionmaster/'
         GameRoom(name='test', password='test').save()
+        GameRoom(name='test2', password='test').save()
+        GameRoom(name='test3', password='test').save()
         Player(game_room_id=1, name='test').save()
         Player(game_room_id=1, name='test2').save()
         response = self.client.get(url, format='json')
@@ -193,6 +195,7 @@ class TestGameLogic(APITestCase):
         """
         url = '/api/gameroom/1/answerdetective/'
         GameRoom(name='test', password='test').save()
+        GameRoom(name='test2', password='test').save()
         Player(game_room_id=1, name='test', question_master=True).save()
         Question(creator_id=1, value='test question')
         Player(game_room_id=1, name='test2').save()
@@ -209,6 +212,7 @@ class TestGameLogic(APITestCase):
         """
         url = '/api/gameroom/1/questionmaster/'
         GameRoom(name='test', password='test').save()
+        GameRoom(name='test2', password='test').save()
         Player(game_room_id=1, name='test').save()
         Player(game_room_id=1, name='test2').save()
         response = self.client.get(url, format='json')

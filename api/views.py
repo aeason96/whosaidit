@@ -80,7 +80,6 @@ class QuestionMasterRetrieveView(generics.RetrieveAPIView):
 
 class AnswerDetectiveRetrieveView(generics.RetrieveAPIView):
     serializer_class = PlayerSerializer
-    lookup_field = 'game_room'
 
     def get(self, request, *args, **kwargs):
         current_detective = Player.objects.filter(game_room_id=kwargs['game_room'], answer_detective=True)
