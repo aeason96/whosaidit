@@ -118,8 +118,6 @@ class QuestionRetrieveView(generics.RetrieveAPIView):
     queryset = Question.objects.filter(active=True)
 
 
-
-
 class AnswerCreateView(generics.CreateAPIView):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
@@ -143,7 +141,9 @@ class QuestionUnlockRetrieveView(generics.RetrieveAPIView):
     queryset = Question.objects.all()
 
     def get(self, request, *args, **kwargs):
-        Question.objects.get(pk=kwargs['pk']).unlocked = True
+        q = Question.objects.get(pk=kwargs['pk'])
+        q.unlocked = True
+        q.save()
         return super().get(request, *args, **kwargs)
 
 class QuestionGetView(generics.RetrieveAPIView):
