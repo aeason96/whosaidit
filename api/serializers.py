@@ -44,7 +44,11 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = '__all__'
 
-class AnswerSerializerDepth(AnswerSerializer):
+class AnswerSerializerDepth(serializers.ModelSerializer):
+    creator = PlayerSerializer()
+    question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
 
     class Meta:
+        model = Answer
+        fields = '__all__'
         depth = 1
